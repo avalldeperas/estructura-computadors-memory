@@ -1,6 +1,6 @@
 section .data               
 ;Canviar Nom i Cognom per les vostres dades.
-developer db "_Nom_Cognom1_",0
+developer db "_Albert Valldeperas_",0
 
 ;Constants que també estan definides en C.
 ROWDIM  equ 4       ;files de la matriu.
