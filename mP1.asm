@@ -250,7 +250,36 @@ showDigitsP1:
    push rbp
    mov  rbp, rsp
    
+   push ax 
+   push bx
+   push cx
+   push dx
    
+   mov ax, WORD[value]
+   
+   cmp ax, 0   			; avoid division by 0
+   je end_division
+   
+   mov bx, 0
+   mov cx, 10
+   div cx
+   
+   add ax, '0'    		; tens
+   add dx, '0'			; units
+  
+   end_division:
+   call gotoxyP1
+   
+   mov BYTE[charac], dl
+   call printchP1
+   
+   ;dec DWORD[colScreen]
+   ;;mov DWORD[colScreen], ecx
+   
+   pop dx
+   pop cx
+   pop bx
+   pop ax
    
    mov rsp, rbp
    pop rbp
