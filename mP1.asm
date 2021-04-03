@@ -220,7 +220,23 @@ posCurScreenP1:
    push rbp
    mov  rbp, rsp
    
+   push rax
+   push rbx
+   push rcx
+     
+   mov rax, QWORD[rowScreen]
+   mov rbx, QWORD[colScreen]
    
+   ;add eax, 10
+   ;add ebx, 12
+   
+   ;mov rcx, DWORD[pos]
+   
+   ;call gotoxyP1
+   
+   pop rcx
+   pop rbx
+   pop rax
    
    mov rsp, rbp
    pop rbp
@@ -255,26 +271,30 @@ showDigitsP1:
    push cx
    push dx
    
-   mov ax, WORD[value]
+   ;mov ax, WORD[value]
+   mov ax, 35
    
-   cmp ax, 0   			; avoid division by 0
+   cmp ax, 0   						; avoid division by 0
    je end_division
    
    mov bx, 0
    mov cx, 10
    div cx
    
-   add ax, '0'    		; tens
-   add dx, '0'			; units
+   add ax, '0'    					; tens
+   add dx, '0'						; units
   
    end_division:
    call gotoxyP1
    
-   mov BYTE[charac], dl
+   mov BYTE[charac], al			; print tens
    call printchP1
    
-   ;dec DWORD[colScreen]
+   ;dec DWORD[colScreen]				; move cursor to the right
    ;;mov DWORD[colScreen], ecx
+   
+   mov BYTE[charac], dl			; print units
+   call printchP1
    
    pop dx
    pop cx
