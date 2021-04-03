@@ -271,8 +271,7 @@ showDigitsP1:
    push cx
    push dx
    
-   ;mov ax, WORD[value]
-   mov ax, 35
+   mov ax, WORD[value]
    
    cmp ax, 0   						; avoid division by 0
    je end_division
@@ -285,15 +284,15 @@ showDigitsP1:
    add dx, '0'						; units
   
    end_division:
-   call gotoxyP1
    
-   mov BYTE[charac], al			; print tens
+   mov BYTE[charac], al				; print tens
+   call gotoxyP1 
    call printchP1
    
-   ;dec DWORD[colScreen]				; move cursor to the right
-   ;;mov DWORD[colScreen], ecx
+   inc DWORD[colScreen]				; moves cursor to the right
    
-   mov BYTE[charac], dl			; print units
+   mov BYTE[charac], dl 			; print units
+   call gotoxyP1
    call printchP1
    
    pop dx
