@@ -223,24 +223,23 @@ posCurScreenP1:
    push rax
    push rbx
    push rcx
-   push rdx  
    
    mov rbx, QWORD[pos]
    mov rcx, 0               
                              
-   div_loop:                   
+   div_loop:                   	; calculates quotient and remainder 
       sub rbx, COLDIM  
       inc rcx                    
       cmp rbx, COLDIM
       jge div_loop
       
-   mov rax, rcx
+   mov rax, rcx					; calculates rowScreen from quotient
    mov al, 2
    mul al
    mov rax, 10
    mov QWORD[rowScreen], rax
    
-   mov rax, rbx ; cleans rax 
+   mov rax, rbx 				; calculates colScreen from remainder
    mov al, 4
    mul al
    mov rax, 12   
@@ -248,7 +247,6 @@ posCurScreenP1:
    
    call gotoxyP1
    
-   pop rdx
    pop rcx
    pop rbx
    pop rax
@@ -351,12 +349,58 @@ updateBoardP1:
    push rbp
    mov  rbp, rsp
    
+   mov r8d, 0       ;i
+   mov r9d, 0       ;j
    
+   loop_i:
+   cmp r8d, ROWDIM
+   jge end_loop_i
+   
+	mov r9d, 0
+	loop_j:
+	cmp r9d, COLDIM
+	jge end_loop_j
+	
+	;gotoxyP1_C();
+    ;charac = mOpenCards[i][j];
+    ;printchP1_C();
+    ;colScreen = colScreen + 4;
+	
+	inc r9d
+	jmp loop_j
+	
+	end_loop_j:
+	inc r8d
+	jmp loop_i
+   
+   end_loop_i:
+	
    
    mov rsp, rbp
    pop rbp
    ret
 
+   
+   rowScreen=10;
+   for (i=0;i<ROWDIM;i++){
+	  colScreen=12;
+      for (j=0;j<COLDIM;j++){
+         gotoxyP1_C();
+         charac = mOpenCards[i][j];
+         printchP1_C();
+         colScreen = colScreen + 4;
+      }
+      rowScreen = rowScreen + 2;
+   }
+   
+   rowScreen = 19;
+   colScreen = 15;
+   value = moves;
+   showDigitsP1_C();
+   colScreen = 24;
+   value = pairs;
+   showDigitsP1_C();
+   
 
 ;;;;;  
 ; Actualitzar la posició del cursor dins la matriu indicada per la 
