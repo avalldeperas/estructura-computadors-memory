@@ -206,8 +206,8 @@ getchP1:
 ; de la pantalla.
 ; Per a calcular la posició del cursor a pantalla (rowScreen) i 
 ; (colScreen) utilitzar aquestes fórmules:
-; rScreen=10+(pos/COLDIM)*2)
-; cScreen=12+(pos%COLDIM)*4)
+; rowScreen=10+((pos/COLDIM)*2);
+; colScreen=12+((pos%COLDIM)*4);
 ; Per a posicionar el cursor a la pantalla s'ha de cridar a la 
 ; subrutina gotoxyP1.
 ;
@@ -223,17 +223,32 @@ posCurScreenP1:
    push rax
    push rbx
    push rcx
-     
-   mov rax, QWORD[rowScreen]
-   mov rbx, QWORD[colScreen]
+   push rdx  
    
-   ;add eax, 10
-   ;add ebx, 12
+   mov rbx, QWORD[pos]
+   mov rcx, 0               
+                             
+   div_loop:                   
+      sub rbx, COLDIM  
+      inc rcx                    
+      cmp rbx, COLDIM
+      jge div_loop
+      
+   mov rax, rcx
+   mov al, 2
+   mul al
+   mov rax, 10
+   mov QWORD[rowScreen], rax
    
-   ;mov rcx, DWORD[pos]
+   mov rax, rbx ; cleans rax 
+   mov al, 4
+   mul al
+   mov rax, 12   
+   mov QWORD[colScreen], rax   
    
-   ;call gotoxyP1
+   call gotoxyP1
    
+   pop rdx
    pop rcx
    pop rbx
    pop rax
