@@ -349,57 +349,74 @@ updateBoardP1:
    push rbp
    mov  rbp, rsp
    
-   mov r8d, 0       ;i
-   mov r9d, 0       ;j
+   ;push eax
+   ;push ebx
+   ;push ecx
+   ;push edx
+   ;push esi
    
-   loop_i:
-   cmp r8d, ROWDIM
-   jge end_loop_i
+   mov eax, 0       				;i
+   mov ebx, 0       				;j
+   mov ecx, 10
+   mov edx, 12
    
-	mov r9d, 0
+   mov DWORD[rowScreen], ecx       ;rowScreenAux 
+   mov DWORD[colScreen], edx       ;colScreenAux
+   mov esi, 0		;index to access matrix
+
+   loop_i:	
+	cmp eax, ROWDIM
+	jge end_loop_i
+
+	mov ebx, 0
+	mov edx, 12
+   
 	loop_j:
-	cmp r9d, COLDIM
-	jge end_loop_j
-	
-	;gotoxyP1_C();
-    ;charac = mOpenCards[i][j];
-    ;printchP1_C();
-    ;colScreen = colScreen + 4;
-	
-	inc r9d
-	jmp loop_j
+		cmp ebx, COLDIM
+		jge end_loop_j
+
+		call gotoxyP1							;gotoxyP1_C();
+
+		mov r8b, BYTE[mOpenCards + esi]
+		mov BYTE[charac], r8b 					;charac = mOpenCards[i][j];
+			
+		call printchP1
+												;printchP1_C();
+		add edx, 4
+		mov DWORD[colScreen], edx 				;colScreen = colScreen + 4;
+		
+		inc esi
+		inc ebx
+		jmp loop_j
 	
 	end_loop_j:
-	inc r8d
+	
+	inc eax
+	add ecx, 2
+	mov DWORD[rowScreen], ecx
+	
 	jmp loop_i
    
-   end_loop_i:
+	end_loop_i:
 	
+   ;mov DWORD[rowScreen], 19 		
+   ;mov DWORD[colScreen], 15
+   ;mov WORD[value], WORD[moves]
+   ;call showDigitsP1
+   ;mov DWORD[colScreen], 24
+   ;mov WORD[value], WORD[pairs]
+   ;call showDigitsP1
+   
+   ;pop esi
+   ;pop edx
+   ;pop ecx
+   ;pop ebx
+   ;pop eax
    
    mov rsp, rbp
    pop rbp
-   ret
-
+   ret   
    
-   rowScreen=10;
-   for (i=0;i<ROWDIM;i++){
-	  colScreen=12;
-      for (j=0;j<COLDIM;j++){
-         gotoxyP1_C();
-         charac = mOpenCards[i][j];
-         printchP1_C();
-         colScreen = colScreen + 4;
-      }
-      rowScreen = rowScreen + 2;
-   }
-   
-   rowScreen = 19;
-   colScreen = 15;
-   value = moves;
-   showDigitsP1_C();
-   colScreen = 24;
-   value = pairs;
-   showDigitsP1_C();
    
 
 ;;;;;  
