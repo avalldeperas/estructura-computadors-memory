@@ -280,7 +280,6 @@ showDigitsP1:
    mov  rbp, rsp
    
    push ax 
-   push bx
    push cx
    push dx
    
@@ -289,7 +288,7 @@ showDigitsP1:
    cmp ax, 0   						; avoid division by 0
    je end_division
    
-   mov bx, 0
+   mov dx, 0						; cleans dx to avoid floating point exp
    mov cx, 10
    div cx
    
@@ -310,7 +309,6 @@ showDigitsP1:
    
    pop dx
    pop cx
-   pop bx
    pop ax
    
    mov rsp, rbp
@@ -349,69 +347,72 @@ updateBoardP1:
    push rbp
    mov  rbp, rsp
    
-   ;push eax
-   ;push ebx
-   ;push ecx
-   ;push edx
-   ;push esi
+   push rax
+   push rbx
+   push rcx
+   push rdx
+   push rsi
    
-   mov eax, 0       				;i
-   mov ebx, 0       				;j
-   mov ecx, 10
-   mov edx, 12
+   mov eax, 0       			;i
+   mov ebx, 0       			;j
+   mov ecx, 10					;rowScreenAux
+   mov edx, 12					;colScreenAux
    
-   mov DWORD[rowScreen], ecx       ;rowScreenAux 
-   mov DWORD[colScreen], edx       ;colScreenAux
-   mov esi, 0		;index to access matrix
+   mov DWORD[rowScreen], ecx        
+   mov DWORD[colScreen], edx       
+   mov esi, 0					;index to access matrix
 
    loop_i:	
 	cmp eax, ROWDIM
 	jge end_loop_i
 
-	mov ebx, 0
+	mov ebx, 0					; set j=0
 	mov edx, 12
    
 	loop_j:
-		cmp ebx, COLDIM
-		jge end_loop_j
+		cmp ebx, COLDIM				
+		jge end_loop_j						; if j>=COLDIM, then next row
 
-		call gotoxyP1							;gotoxyP1_C();
+		call gotoxyP1							
 
-		mov r8b, BYTE[mOpenCards + esi]
-		mov BYTE[charac], r8b 					;charac = mOpenCards[i][j];
+		mov r8b, BYTE[mOpenCards + esi]		;charac = mOpenCards[i][j];
+		mov BYTE[charac], r8b 					
 			
 		call printchP1
-												;printchP1_C();
-		add edx, 4
-		mov DWORD[colScreen], edx 				;colScreen = colScreen + 4;
+												
+		add edx, 4							;colScreen = colScreen + 4;
+		mov DWORD[colScreen], edx 				
 		
-		inc esi
-		inc ebx
+		inc esi								; matrix index++
+		inc ebx								; j++
 		jmp loop_j
 	
 	end_loop_j:
 	
-	inc eax
-	add ecx, 2
+	inc eax									; i++
+	add ecx, 2								; rowScreen = rowScreen + 2
 	mov DWORD[rowScreen], ecx
 	
 	jmp loop_i
    
-	end_loop_i:
+   end_loop_i:
 	
-   ;mov DWORD[rowScreen], 19 		
-   ;mov DWORD[colScreen], 15
-   ;mov WORD[value], WORD[moves]
-   ;call showDigitsP1
-   ;mov DWORD[colScreen], 24
-   ;mov WORD[value], WORD[pairs]
-   ;call showDigitsP1
+   mov DWORD[rowScreen], 19 				; print moves
+   mov DWORD[colScreen], 15
+   mov r8w, WORD[moves]
+   mov WORD[value], r8w
+   call showDigitsP1
    
-   ;pop esi
-   ;pop edx
-   ;pop ecx
-   ;pop ebx
-   ;pop eax
+   mov DWORD[colScreen], 24					; print pairs
+   mov r8w, WORD[pairs]
+   mov WORD[value], r8w
+   call showDigitsP1
+   
+   pop rsi
+   pop rdx
+   pop rcx
+   pop rbx
+   pop rax
    
    mov rsp, rbp
    pop rbp
