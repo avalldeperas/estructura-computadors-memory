@@ -227,22 +227,22 @@ posCurScreenP1:
    mov rbx, QWORD[pos]
    mov rcx, 0               
                              
-   div_loop:                   	; calculates quotient and remainder 
+   div_loop:                   	;calculates quotient and remainder 
       sub rbx, COLDIM  
       inc rcx                    
       cmp rbx, COLDIM
       jge div_loop
       
-   mov rax, rcx					; calculates rowScreen from quotient
-   mov al, 2
-   mul al
-   mov rax, 10
+								;calculates rowScreen from quotient
+   mov rax, rcx					;moves quotient to register (pos/COLDIM)
+   sal rax, 1 					;multiplies x2 ((pos/COLDIM)*2)
+   add rax, 10					;adds 10 to the total (10+((pos/COLDIM)*2))
    mov QWORD[rowScreen], rax
    
-   mov rax, rbx 				; calculates colScreen from remainder
-   mov al, 4
-   mul al
-   mov rax, 12   
+								;calculates colScreen from remainder
+   mov rax, rbx 				;moves remainder to register (pos%COLDIM)
+   sal rax, 2					;multiplies x4 	((pos%COLDIM)*4)
+   add rax, 12   				;adds 12 to the total (12+((pos%COLDIM)*4))
    mov QWORD[colScreen], rax   
    
    call gotoxyP1
@@ -285,23 +285,23 @@ showDigitsP1:
    
    mov ax, WORD[value]
    
-   cmp ax, 0   						; avoid division by 0
+   cmp ax, 0   						;avoid division by 0
    je end_division
    
-   mov dx, 0						; cleans dx to avoid floating point exp
+   mov dx, 0						;cleans dx to avoid floating point exp
    mov cx, 10
    div cx
    
-   add ax, '0'    					; tens
-   add dx, '0'						; units
+   add ax, '0'    					;tens
+   add dx, '0'						;units
   
    end_division:
    
-   mov BYTE[charac], al				; print tens
+   mov BYTE[charac], al				;print tens
    call gotoxyP1 
    call printchP1
    
-   inc DWORD[colScreen]				; moves cursor to the right
+   inc DWORD[colScreen]				;moves cursor to the right
    
    mov BYTE[charac], dl 			; print units
    call gotoxyP1
@@ -451,7 +451,7 @@ moveCursorP1:
    mov edx, 0
    
    mov ecx, COLDIM
-   div ecx					;dividend (i) on eax, remainder (j) on edx
+   div ecx					; dividend (i) on eax, remainder (j) on edx
    
    switch:
    
