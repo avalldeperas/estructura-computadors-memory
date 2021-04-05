@@ -462,31 +462,28 @@ moveCursorP1:
    switch:
    
    case_i:
-		cmp sil, 'i'					;up
-		jne case_j
+		cmp sil, 'i'				;UP
+		jne case_k
 		
 		cmp eax, 0				  	;if (i > 0) 
 		jle case_done
-		sub ebx, DWORD[COLDIM]		;pos=pos-COLDIM
+		sub ebx, COLDIM				;pos=pos-COLDIM
 		
 		jmp case_done
    
    case_k:
-		cmp sil, 'k'					;down
-		jne case_l
+		cmp sil, 'k'				;DOWN
+		jne case_j
 		
-		mov r8d, DWORD[ROWDIM]	
-		dec r8d
-		
-		cmp eax, r8d 				;if (i < (ROWDIM-1)) 
+		cmp eax, ROWDIM	- 1 		;if (i < (ROWDIM-1)) pos=pos+COLDIM;
 		jge case_done
-		add ebx, DWORD[COLDIM] 		;pos=pos+COLDIM
+		add ebx, COLDIM 			;pos=pos+COLDIM
 		
 		jmp case_done		   
    
    case_j:
-		cmp sil, 'j'					;left
-		jne case_k
+		cmp sil, 'j'				;LEFT
+		jne case_l
 							
 		cmp edx, 0					;if (j > 0) 
 		jle case_done
@@ -494,14 +491,11 @@ moveCursorP1:
 		jmp case_done
    
    case_l:
-		cmp sil, 'l'					; right
+		cmp sil, 'l'				;RIGHT
 		jne case_default
 		
-		mov r8d, DWORD[ROWDIM]	
-		dec r8d
-		
-		cmp edx, r8d
-		jge	case_done				;if (j < (COLDIM-1)) 
+		cmp edx, COLDIM - 1			;if (j < (COLDIM-1)) 
+		jge	case_done				
 		inc ebx						;pos=pos+1
 		
 		jmp case_done
@@ -557,6 +551,16 @@ openCardP1:
    mov  rbp, rsp
 
    
+   ;int i = pos / COLDIM; // En assemblador no és necessari calcular
+   ;int j = pos % COLDIM; // la 'i' i la 'j'. Utilitzem 'pos'.
+   
+   ;vPos[state] = pos;
+   
+   ;if (mCards[i][j] != 'x') {
+    ;  mOpenCards[i][j] = mCards[i][j];
+     ; mCards[i][j] = 'x';
+     ; state++;
+   ;}
          
    mov rsp, rbp
    pop rbp
