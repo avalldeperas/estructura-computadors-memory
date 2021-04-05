@@ -444,8 +444,79 @@ updateBoardP1:
 moveCursorP1:  
    push rbp
    mov  rbp, rsp
-
    
+   push rax
+   push rbx
+   push rdx
+   push r8
+   
+   mov sil, BYTE[charac]
+   mov eax, DWORD[pos]		; pos to be divided
+   mov ebx, eax				; store temp pos
+   mov edx, 0
+   
+   ; TODO change to COLDIM
+   mov ecx, 5
+   div ecx					;dividend (i) on eax, remainder (j) on edx
+   
+   switch:
+   
+   case_i:
+		cmp sil, 'i'					;up
+		jne case_j
+		
+		cmp eax, 0				  	;if (i > 0) 
+		jle case_done
+		sub ebx, DWORD[COLDIM]		;pos=pos-COLDIM
+		
+		jmp case_done
+   
+   case_k:
+		cmp sil, 'k'					;down
+		jne case_l
+		
+		mov r8d, DWORD[ROWDIM]	
+		dec r8d
+		
+		cmp eax, r8d 				;if (i < (ROWDIM-1)) 
+		jge case_done
+		add ebx, DWORD[COLDIM] 		;pos=pos+COLDIM
+		
+		jmp case_done		   
+   
+   case_j:
+		cmp sil, 'j'					;left
+		jne case_k
+							
+		cmp edx, 0					;if (j > 0) 
+		jle case_done
+		dec ebx 					;pos=pos-1
+		jmp case_done
+   
+   case_l:
+		cmp sil, 'l'					; right
+		jne case_default
+		
+		mov r8d, DWORD[ROWDIM]	
+		dec r8d
+		
+		cmp edx, r8d
+		jge	case_done				;if (j < (COLDIM-1)) 
+		inc ebx						;pos=pos+1
+		
+		jmp case_done
+   
+   case_default:
+		; charac not supported
+   
+   case_done:
+	
+   mov DWORD[pos], ebx
+   
+   pop r8
+   pop rdx
+   pop rbx
+   pop rax
          
    mov rsp, rbp
    pop rbp
