@@ -356,54 +356,49 @@ updateBoardP1:
    mov eax, 0       			;i
    mov ebx, 0       			;j
    mov ecx, 10					;rowScreenAux
-   mov edx, 12					;colScreenAux
-   
-   mov DWORD[rowScreen], ecx        
-   mov DWORD[colScreen], edx       
+   mov edx, 12					;colScreenAux   
    mov esi, 0					;index to access matrix
 
    loop_i:	
 	cmp eax, ROWDIM
 	jge end_loop_i
 
-	mov ebx, 0					; set j=0
-	mov edx, 12
+	mov ebx, 0					;set j=0
+	mov edx, 12					;reset colScreenAux
+	mov DWORD[rowScreen], ecx	
    
 	loop_j:
 		cmp ebx, COLDIM				
-		jge end_loop_j						; if j>=COLDIM, then next row
+		jge end_loop_j						;if j>=COLDIM, then next row
 
-		call gotoxyP1							
-
+		mov DWORD[colScreen], edx		
+		call gotoxyP1
+		
 		mov r8b, BYTE[mOpenCards + esi]		;charac = mOpenCards[i][j];
-		mov BYTE[charac], r8b 					
-			
+		mov BYTE[charac], r8b
 		call printchP1
 												
 		add edx, 4							;colScreen = colScreen + 4;
-		mov DWORD[colScreen], edx 				
-		
-		inc esi								; matrix index++
-		inc ebx								; j++
+		inc esi								;matrix index++
+		inc ebx								;j++
 		jmp loop_j
 	
 	end_loop_j:
 	
-	inc eax									; i++
-	add ecx, 2								; rowScreen = rowScreen + 2
-	mov DWORD[rowScreen], ecx
+	inc eax									;i++
+	add ecx, 2								;rowScreen = rowScreen + 2
 	
 	jmp loop_i
    
    end_loop_i:
 	
-   mov DWORD[rowScreen], 19 				; print moves
+   mov DWORD[rowScreen], 19 				;print moves
    mov DWORD[colScreen], 15
    mov r8w, WORD[moves]
    mov WORD[value], r8w
    call showDigitsP1
    
-   mov DWORD[colScreen], 24					; print pairs
+   mov DWORD[colScreen], 24					;print pairs
    mov r8w, WORD[pairs]
    mov WORD[value], r8w
    call showDigitsP1
@@ -474,7 +469,7 @@ moveCursorP1:
 		cmp sil, 'k'				;DOWN
 		jne case_j
 		
-		cmp eax, ROWDIM	- 1 		;if (i < (ROWDIM-1)) pos=pos+COLDIM;
+		cmp eax, ROWDIM	- 1 		;if (i < (ROWDIM-1)) 
 		jge case_done
 		add ebx, COLDIM 			;pos=pos+COLDIM
 		
@@ -549,6 +544,10 @@ openCardP1:
    push rbp
    mov  rbp, rsp
    
+   push rax
+   push rbx
+   push rcx
+   
    mov eax, DWORD[state]			;[vPos+state*4] = [vPos + 0*4] || [vPos + 1*4]
    sal eax, 2
    
@@ -562,11 +561,16 @@ openCardP1:
    jne end_if
    
    mov DWORD[mOpenCards + ebx], ecx 	;mOpenCards[i][j] = mCards[i][j];
-   ;mov [mCards + ebx], 'x'				;mCards[i][j] = 'x';
+   mov dl, 'x' 
+   mov [mCards + ebx], dl				;mCards[i][j] = 'x';
    inc DWORD[state]						;state++
    
    end_if:
-         
+   
+   pop rcx
+   pop rbx
+   pop rax
+   
    mov rsp, rbp
    pop rbp
    ret
