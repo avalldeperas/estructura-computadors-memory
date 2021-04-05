@@ -448,6 +448,7 @@ moveCursorP1:
    push rax
    push rbx
    push rdx
+   push rsi
    
    mov sil, BYTE[charac]
    mov eax, DWORD[pos]		; pos to be divided
@@ -455,7 +456,7 @@ moveCursorP1:
    mov edx, 0
    
    mov ecx, COLDIM
-   div COLDIM					;dividend (i) on eax, remainder (j) on edx
+   div ecx					;dividend (i) on eax, remainder (j) on edx
    
    switch:
    
@@ -505,6 +506,7 @@ moveCursorP1:
 	
    mov DWORD[pos], ebx
    
+   pop rsi
    pop rdx
    pop rbx
    pop rax
@@ -546,18 +548,24 @@ moveCursorP1:
 openCardP1:  
    push rbp
    mov  rbp, rsp
-
    
-   ;int i = pos / COLDIM; // En assemblador no és necessari calcular
-   ;int j = pos % COLDIM; // la 'i' i la 'j'. Utilitzem 'pos'.
+   mov eax, DWORD[state]			;[vPos+state*4] = [vPos + 0*4] || [vPos + 1*4]
+   sal eax, 2
    
-   ;vPos[state] = pos;
+   mov ebx, DWORD[pos]   
    
-   ;if (mCards[i][j] != 'x') {
-    ;  mOpenCards[i][j] = mCards[i][j];
-     ; mCards[i][j] = 'x';
-     ; state++;
-   ;}
+   mov [vPos + eax], ebx 				;vPos[state] = pos;
+   
+   mov ecx, [mCards + ebx]				;mCards[i][j] is equal to mCards[pos]
+   
+   cmp ecx, 'x'							;if (mCards[i][j] != 'x')
+   jne end_if
+   
+   mov DWORD[mOpenCards + ebx], ecx 	;mOpenCards[i][j] = mCards[i][j];
+   ;mov [mCards + ebx], 'x'				;mCards[i][j] = 'x';
+   inc DWORD[state]						;state++
+   
+   end_if:
          
    mov rsp, rbp
    pop rbp
