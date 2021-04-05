@@ -448,16 +448,14 @@ moveCursorP1:
    push rax
    push rbx
    push rdx
-   push r8
    
    mov sil, BYTE[charac]
    mov eax, DWORD[pos]		; pos to be divided
    mov ebx, eax				; store temp pos
    mov edx, 0
    
-   ; TODO change to COLDIM
-   mov ecx, 5
-   div ecx					;dividend (i) on eax, remainder (j) on edx
+   mov ecx, COLDIM
+   div COLDIM					;dividend (i) on eax, remainder (j) on edx
    
    switch:
    
@@ -507,7 +505,6 @@ moveCursorP1:
 	
    mov DWORD[pos], ebx
    
-   pop r8
    pop rdx
    pop rbx
    pop rax
