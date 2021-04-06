@@ -221,34 +221,27 @@ posCurScreenP1:
    mov  rbp, rsp
    
    push rax
-   push rbx
    push rcx
+   push rdx
    
-   mov rbx, QWORD[pos]
-   mov rcx, 0               
-                             
-   div_loop:                   	;calculates quotient and remainder 
-      sub rbx, COLDIM  
-      inc rcx                    
-      cmp rbx, COLDIM
-      jge div_loop
-      
-								;calculates rowScreen from quotient
-   mov rax, rcx					;moves quotient to register (pos/COLDIM)
-   sal rax, 1 					;multiplies x2 ((pos/COLDIM)*2)
+   mov rax, QWORD[pos]
+   mov rcx, COLDIM
+   mov rdx, 0 
+   				
+   div rcx 						;(pos/COLDIM) to rax, (pos/COLDIM) to rdx
+								
+   sal rax, 1 					;quotient multiplied x2 ((pos/COLDIM)*2)
    add rax, 10					;adds 10 to the total (10+((pos/COLDIM)*2))
    mov QWORD[rowScreen], rax
    
-								;calculates colScreen from remainder
-   mov rax, rbx 				;moves remainder to register (pos%COLDIM)
-   sal rax, 2					;multiplies x4 	((pos%COLDIM)*4)
-   add rax, 12   				;adds 12 to the total (12+((pos%COLDIM)*4))
-   mov QWORD[colScreen], rax   
+   sal rdx, 2					;remainder multiplied x4 ((pos%COLDIM)*4)
+   add rdx, 12   				;adds 12 to the total (12+((pos%COLDIM)*4))
+   mov QWORD[colScreen], rdx   
    
    call gotoxyP1
    
+   pop rdx
    pop rcx
-   pop rbx
    pop rax
    
    mov rsp, rbp
