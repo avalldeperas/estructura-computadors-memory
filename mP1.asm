@@ -345,6 +345,8 @@ updateBoardP1:
    push rcx
    push rdx
    push rsi
+   push r8
+   push r9
    
    mov eax, 0       			;i
    mov ebx, 0       			;j
@@ -387,15 +389,17 @@ updateBoardP1:
 	
    mov DWORD[rowScreen], 19 				;print moves
    mov DWORD[colScreen], 15
-   mov r8w, WORD[moves]
-   mov WORD[value], r8w
+   mov r9w, WORD[moves]
+   mov WORD[value], r9w
    call showDigitsP1
    
    mov DWORD[colScreen], 24					;print pairs
-   mov r8w, WORD[pairs]
-   mov WORD[value], r8w
+   mov r9w, WORD[pairs]
+   mov WORD[value], r9w
    call showDigitsP1
    
+   pop r9
+   pop r8
    pop rsi
    pop rdx
    pop rcx
@@ -435,6 +439,7 @@ moveCursorP1:
    
    push rax
    push rbx
+   push rcx
    push rdx
    push rsi
    
@@ -496,6 +501,7 @@ moveCursorP1:
    
    pop rsi
    pop rdx
+   pop rcx
    pop rbx
    pop rax
          
@@ -546,22 +552,20 @@ openCardP1:
    mov rbx, 0
    mov rcx, 0
    mov rdx, 0
-   
-   mov eax, DWORD[state]				;[vPos+state*4] = [vPos + 0*4] || [vPos + 1*4]
-   sal eax, 2
-   
-   mov ebx, DWORD[pos]   
-   
+										
+   mov eax, DWORD[state]
+   shl eax, 2							;[vPos + state*4] 
+   mov ebx, DWORD[pos]  
    mov [vPos + eax], ebx 				;vPos[state] = pos;
+   
    mov dl, BYTE[mCards + ebx]			;mCards[i][j] in assembly is mCards[pos]							
    
    cmp dl, 'x'								
-   je end_if								;if (mCards[i][j] != 'x')
-   
-	   mov [mOpenCards + ebx], dl 			;mOpenCards[i][j] = mCards[i][j];
+   je end_if	
+	   mov [mOpenCards + ebx], dl 		;mOpenCards[i][j] = mCards[i][j];
 	   mov dl, 'x'  
-	   mov [mCards + ebx], dl				;mCards[i][j] = 'x';
-	   inc DWORD[state]						;state++
+	   mov [mCards + ebx], dl			;mCards[i][j] = 'x'
+	   inc DWORD[state]					;state++
    
    end_if:
    
