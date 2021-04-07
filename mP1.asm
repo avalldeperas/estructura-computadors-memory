@@ -228,7 +228,7 @@ posCurScreenP1:
    mov rcx, COLDIM
    mov rdx, 0 
    				
-   div rcx 						;(pos/COLDIM) to rax, (pos/COLDIM) to rdx
+   div rcx 						;(pos/COLDIM) to rax, (pos%COLDIM) to rdx
 								
    sal rax, 1 					;quotient multiplied x2 ((pos/COLDIM)*2)
    add rax, 10					;adds 10 to the total (10+((pos/COLDIM)*2))
@@ -540,26 +540,32 @@ openCardP1:
    push rax
    push rbx
    push rcx
+   push rdx
    
-   mov eax, DWORD[state]			;[vPos+state*4] = [vPos + 0*4] || [vPos + 1*4]
+   mov rax, 0
+   mov rbx, 0
+   mov rcx, 0
+   mov rdx, 0
+   
+   mov eax, DWORD[state]				;[vPos+state*4] = [vPos + 0*4] || [vPos + 1*4]
    sal eax, 2
    
    mov ebx, DWORD[pos]   
    
    mov [vPos + eax], ebx 				;vPos[state] = pos;
+   mov dl, BYTE[mCards + ebx]			;mCards[i][j] in assembly is mCards[pos]							
    
-   mov ecx, [mCards + ebx]				;mCards[i][j] is equal to mCards[pos]
+   cmp dl, 'x'								
+   je end_if								;if (mCards[i][j] != 'x')
    
-   cmp ecx, 'x'							;if (mCards[i][j] != 'x')
-   jne end_if
-   
-   mov DWORD[mOpenCards + ebx], ecx 	;mOpenCards[i][j] = mCards[i][j];
-   mov dl, 'x' 
-   mov [mCards + ebx], dl				;mCards[i][j] = 'x';
-   inc DWORD[state]						;state++
+	   mov [mOpenCards + ebx], dl 			;mOpenCards[i][j] = mCards[i][j];
+	   mov dl, 'x'  
+	   mov [mCards + ebx], dl				;mCards[i][j] = 'x';
+	   inc DWORD[state]						;state++
    
    end_if:
    
+   pop rdx
    pop rcx
    pop rbx
    pop rax
