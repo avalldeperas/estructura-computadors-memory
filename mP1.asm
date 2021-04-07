@@ -224,19 +224,19 @@ posCurScreenP1:
    push rcx
    push rdx
    
-   mov rax, QWORD[pos]
-   mov rcx, COLDIM
-   mov rdx, 0 
+   mov eax, DWORD[pos]
+   mov ecx, COLDIM
+   mov edx, 0 
    				
-   div rcx 						;(pos/COLDIM) to rax, (pos%COLDIM) to rdx
+   div ecx 						;(pos/COLDIM) to rax, (pos%COLDIM) to rdx
 								
-   sal rax, 1 					;quotient multiplied x2 ((pos/COLDIM)*2)
-   add rax, 10					;adds 10 to the total (10+((pos/COLDIM)*2))
-   mov QWORD[rowScreen], rax
+   sal eax, 1 					;quotient multiplied x2 ((pos/COLDIM)*2)
+   add eax, 10					;adds 10 to the total (10+((pos/COLDIM)*2))
+   mov DWORD[rowScreen], eax
    
-   sal rdx, 2					;remainder multiplied x4 ((pos%COLDIM)*4)
-   add rdx, 12   				;adds 12 to the total (12+((pos%COLDIM)*4))
-   mov QWORD[colScreen], rdx   
+   sal edx, 2					;remainder multiplied x4 ((pos%COLDIM)*4)
+   add edx, 12   				;adds 12 to the total (12+((pos%COLDIM)*4))
+   mov DWORD[colScreen], edx   
    
    call gotoxyP1
    
