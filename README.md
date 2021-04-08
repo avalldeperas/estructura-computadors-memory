@@ -15,7 +15,7 @@ Introduction to low level programming, using assembly with Intel x86-64 arquitec
 
 ### Development
 This project has to main parts:
-- [ ] First part: implement in assembly language the corresponding subroutines to the basic functionalities.
+- [x] First part: implement in assembly language the corresponding subroutines to the basic functionalities.
 - [ ] Second part: Implement in assembly language the corresponding subroutines to the additional functionalities needed to
 complete all project functionalities. Specially, work in how to pass parameters between the subroutines modifying the implementation
 done in the second part.
