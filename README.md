@@ -1,5 +1,5 @@
-# estructura-computadors-p1
-## P1 Estructura de Computadors - Memory
+# estructura-computadors
+## P1-P2 Estructura de Computadors - Memory
 
 ### Presentation 
 This project consists in a group of subroutines programmed in assembly language x86_64, which are called from a C program.
