@@ -1,6 +1,6 @@
 section .data               
 ;Canviar Nom i Cognom per les vostres dades.
-developer db "_Nom_ _Cognom1_",0
+developer db "_Albert_Valldeperas_",0
 
 ;Constants que també estan definides en C.
 ROWDIM  equ 4       ;files de la matriu.
@@ -250,7 +250,33 @@ posCurScreenP2:
    push rbp
    mov  rbp, rsp
    
+   push rax
+   push rcx
+   push rdx
+   ;push rsi
+   ;push rdi
    
+   mov eax, edi
+   mov ecx, COLDIM
+   mov edx, 0 
+   				
+   div ecx 						;(pos/COLDIM) to rax, (pos%COLDIM) to rdx
+								
+   sal eax, 1 					;quotient multiplied x2 ((pos/COLDIM)*2)
+   add eax, 10					;adds 10 to the total (10+((pos/COLDIM)*2))
+   mov edi, eax					;rScreen passed to rdi
+   
+   sal edx, 2					;remainder multiplied x4 ((pos%COLDIM)*4)
+   add edx, 12   				;adds 12 to the total (12+((pos%COLDIM)*4))
+   mov esi, edx   				;cScreen passed to rsi
+   
+   call gotoxyP2				
+   
+   ;pop rdi
+   ;pop rsi
+   pop rdx
+   pop rcx
+   pop rax
    
    mov rsp, rbp
    pop rbp
@@ -285,7 +311,30 @@ showDigitsP2:
    push rbp
    mov  rbp, rsp
    
+   push rax
+   push rbx
    
+   mov ax, dx 						;dx == val, store it in bx
+   
+   mov dx, 0						;cleans bx to avoid floating point exp
+   mov bx, 10						
+   div bx							;val / 10 --> ax=tens, dx=units
+   
+   add ax, '0'    					;tens
+   add dx, '0'						;units
+     
+   mov dil, al						;BYTE[charac] - print tens
+   call gotoxyP2 
+   call printchP2
+   
+   inc esi							;colScreen - moves cursor to the right
+   
+   mov dil, dl 						;BYTE[charac] - print units
+   call gotoxyP2
+   call printchP2
+   
+   pop rbx
+   pop rax
    
    mov rsp, rbp
    pop rbp
