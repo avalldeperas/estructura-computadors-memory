@@ -378,37 +378,39 @@ updateBoardP2:
    push rbx
    push rcx
    push rdx
-   push r8
-   push r9
    push r10
    push r11
+   push r14
+   push r15
    
    mov rax, 0       			;i
    mov rbx, 0       			;j
    mov rcx, 0					;index to access matrix
-   mov r10w, di					;store moves temp before override
-   mov r11w, si					;store pairs temp before override
+   mov r10w, di					;temp moves
+   mov r11w, si					;temp pairs 
+   mov r14d, 10					;rowScreenAux
+   mov r15d, 12					;colScreenAux
 
    loop_i:	
 	cmp eax, ROWDIM
 	jge end_loop_i
 
 	mov ebx, 0					;set j=0
-	mov edx, 12					;reset colScreenAux
-	mov edi, 10					;rScreen parameter
+	mov r15d, 12				;reset colScreenAux
+	mov edi, r14d				;rScreen parameter
    
 	loop_j:
 		cmp ebx, COLDIM				
 		jge end_loop_j						;if j>=COLDIM, then next row
 
-		mov esi, edx						;cScreen parameter
+		mov edi, r14d						;rScreen parameter
+		mov esi, r15d						;cScreen parameter
 		call gotoxyP2
 		
-		mov r8b, BYTE[mOpenCards + ecx]		;charac = mOpenCards[i][j];
-		mov dil, r8b						;pass character to subroutine
+		mov dil, BYTE[mOpenCards + ecx]		;charac = mOpenCards[i][j];	
 		call printchP2
 												
-		add esi, 4							;colScreen = colScreen + 4;
+		add r15d, 4							;colScreen = colScreen + 4;
 		inc ecx								;matrix index++
 		inc ebx								;j++
 		jmp loop_j
@@ -416,7 +418,7 @@ updateBoardP2:
 	end_loop_j:
 	
 	inc eax									;i++
-	add edi, 2								;rowScreen = rowScreen + 2
+	add r14d, 2								;rowScreen = rowScreen + 2
 	
 	jmp loop_i
    
@@ -429,14 +431,15 @@ updateBoardP2:
    call showDigitsP2
    
 							;print pairs (19,24)
+   mov edi, 19
    mov esi, 24				;cScreen
    mov dx, r11w				;pairs from si to send it as parameter 
    call showDigitsP2
    
+   pop r15
+   pop r14
    pop r11
    pop r10
-   pop r9
-   pop r8
    pop rdx
    pop rcx
    pop rbx
