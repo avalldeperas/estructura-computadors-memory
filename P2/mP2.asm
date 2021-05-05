@@ -253,8 +253,6 @@ posCurScreenP2:
    push rax
    push rcx
    push rdx
-   ;push rsi
-   ;push rdi
    
    mov eax, edi
    mov ecx, COLDIM
@@ -272,8 +270,6 @@ posCurScreenP2:
    
    call gotoxyP2				
    
-   ;pop rdi
-   ;pop rsi
    pop rdx
    pop rcx
    pop rax
@@ -323,14 +319,17 @@ showDigitsP2:
    add ax, '0'    					;tens
    add dx, '0'						;units
      
+   call gotoxyP2 					;rdi = 19, rsi = 15
+   
+   mov cl, dil
    mov dil, al						;BYTE[charac] - print tens
-   call gotoxyP2 
    call printchP2
    
+   mov dil, cl
    inc esi							;colScreen - moves cursor to the right
+   call gotoxyP2
    
    mov dil, dl 						;BYTE[charac] - print units
-   call gotoxyP2
    call printchP2
    
    pop rbx
