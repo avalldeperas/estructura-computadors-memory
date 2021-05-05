@@ -309,6 +309,7 @@ showDigitsP2:
    
    push rax
    push rbx
+   push rcx
    
    mov ax, dx 						;dx == val, store it in bx
    
@@ -325,13 +326,14 @@ showDigitsP2:
    mov dil, al						;BYTE[charac] - print tens
    call printchP2
    
-   mov dil, cl						;restoring previous rScreen value
+   mov dil, cl						;restoring previous rScreen
    inc esi							;colScreen - moves cursor to the right
    call gotoxyP2
    
    mov dil, dl 						;BYTE[charac] - print units
    call printchP2
    
+   pop rcx
    pop rbx
    pop rax
    
@@ -359,7 +361,7 @@ showDigitsP2:
 ; posició [19,24] de la pantalla cridant la subrutina showDigitsP2.
 ;
 ; Variables globals utilitzades:   
-; (mOpenCards9): Matriu on guardem les targetes del joc.
+; (mOpenCards): Matriu on guardem les targetes del joc.
 ;
 ; Paràmetres d'entrada : 
 ; (moves): rdi(di): Intents que queden.
@@ -372,7 +374,73 @@ updateBoardP2:
    push rbp
    mov  rbp, rsp
    
+   push rax
+   push rbx
+   push rcx
+   push rdx
+   push r8
+   push r9
+   push r10
+   push r11
    
+   mov rax, 0       			;i
+   mov rbx, 0       			;j
+   mov rcx, 0					;index to access matrix
+   mov r10w, di					;store moves temp before override
+   mov r11w, si					;store pairs temp before override
+
+   loop_i:	
+	cmp eax, ROWDIM
+	jge end_loop_i
+
+	mov ebx, 0					;set j=0
+	mov edx, 12					;reset colScreenAux
+	mov edi, 10					;rScreen parameter
+   
+	loop_j:
+		cmp ebx, COLDIM				
+		jge end_loop_j						;if j>=COLDIM, then next row
+
+		mov esi, edx						;cScreen parameter
+		call gotoxyP2
+		
+		mov r8b, BYTE[mOpenCards + ecx]		;charac = mOpenCards[i][j];
+		mov dil, r8b						;pass character to subroutine
+		call printchP2
+												
+		add esi, 4							;colScreen = colScreen + 4;
+		inc ecx								;matrix index++
+		inc ebx								;j++
+		jmp loop_j
+	
+	end_loop_j:
+	
+	inc eax									;i++
+	add edi, 2								;rowScreen = rowScreen + 2
+	
+	jmp loop_i
+   
+   end_loop_i:
+	
+							;print moves (19,15)
+   mov edi, 19 				;rScreen 
+   mov esi, 15				;cScreen
+   mov dx, r10w				;restore moves and send it as parameter
+   call showDigitsP2
+   
+							;print pairs (19,24)
+   mov esi, 24				;cScreen
+   mov dx, r11w				;pairs from si to send it as parameter 
+   call showDigitsP2
+   
+   pop r11
+   pop r10
+   pop r9
+   pop r8
+   pop rdx
+   pop rcx
+   pop rbx
+   pop rax
    
    mov rsp, rbp
    pop rbp
