@@ -481,8 +481,68 @@ updateBoardP2:
 moveCursorP2:  
    push rbp
    mov  rbp, rsp
-
    
+   push rbx
+   push rcx
+   push rdx
+					   
+   mov eax, esi				;pos to be divided
+   mov edx, 0				;cleans remainder
+   
+   mov ecx, COLDIM
+   div ecx					;pos / COLDIM: 
+							;dividend (i) on eax, remainder (j) on edx
+   switch:
+   
+   case_i:
+		cmp dil, 'i'				;UP
+		jne case_k
+		
+		cmp eax, 0				  	;if (i > 0) 
+		jle case_done
+		sub esi, COLDIM				;pos=pos-COLDIM
+		
+		jmp case_done
+   
+   case_k:
+		cmp dil, 'k'				;DOWN
+		jne case_j
+		
+		cmp eax, ROWDIM	- 1 		;if (i < (ROWDIM-1)) 
+		jge case_done
+		add esi, COLDIM 			;pos=pos+COLDIM
+		
+		jmp case_done		   
+   
+   case_j:
+		cmp dil, 'j'				;LEFT
+		jne case_l
+							
+		cmp edx, 0					;if (j > 0) 
+		jle case_done
+		dec esi 					;pos=pos-1
+		jmp case_done
+   
+   case_l:
+		cmp dil, 'l'				;RIGHT
+		jne case_default
+		
+		cmp edx, COLDIM - 1			;if (j < (COLDIM-1)) 
+		jge	case_done				
+		inc esi						;pos=pos+1
+		
+		jmp case_done
+   
+   case_default:
+		; charac not supported
+   
+   case_done:
+	
+   mov eax, esi
+   
+   pop rdx
+   pop rcx
+   pop rbx
          
    mov rsp, rbp
    pop rbp
