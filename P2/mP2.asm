@@ -585,7 +585,34 @@ openCardP2:
    push rbp
    mov  rbp, rsp
 
+   push rbx
+   push rcx
+   push rdx
    
+   mov rax, 0
+   mov rbx, 0
+   mov rcx, 0
+   mov rdx, 0
+										
+   mov eax, esi
+   shl eax, 2							;[vPos + state*4] 
+   mov ebx, edi  
+   ;mov [rdx + eax], ebx 				;vPos[state] = pos;
+   
+   ;mov dl, BYTE[rdx + ebx]			;mCards[i][j] in assembly is mCards[pos]							
+   
+   cmp dl, 'x'								
+   je end_if	
+	   mov [mOpenCards + ebx], dl 		;mOpenCards[i][j] = mCards[i][j];
+	   mov dl, 'x'  
+	   mov [mCards + ebx], dl			;mCards[i][j] = 'x'
+	   inc eax							;state++
+   
+   end_if:
+   
+   pop rdx
+   pop rcx
+   pop rbx
          
    mov rsp, rbp
    pop rbp
