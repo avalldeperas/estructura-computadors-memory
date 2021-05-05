@@ -321,11 +321,11 @@ showDigitsP2:
      
    call gotoxyP2 					;rdi = 19, rsi = 15
    
-   mov cl, dil
+   mov cl, dil						;store rScreen temp as dil is needed for character
    mov dil, al						;BYTE[charac] - print tens
    call printchP2
    
-   mov dil, cl
+   mov dil, cl						;restoring previous rScreen value
    inc esi							;colScreen - moves cursor to the right
    call gotoxyP2
    
