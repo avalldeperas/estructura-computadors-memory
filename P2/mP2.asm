@@ -649,6 +649,43 @@ checkPairsP2:
    push rbp
    mov  rbp, rsp
    
+   push rbx
+   push rcx
+   push r8
+   push r9
+   
+   mov r8, 0
+   mov r9, 0
+   mov rdx, 0
+   
+   mov ebx, DWORD[rdi+0]			;pos 1a targeta
+   mov ecx, DWORD[rdi+4]			;pos 2a targeta
+   
+   mov r8b, [mOpenCards + ebx]
+   mov r9b, [mOpenCards + ecx]
+   
+   cmp r8b, r9b 					;mOpenCards[i0][j0] == mOpenCards[i1][j1] ? 
+   je matching_pairs
+   
+   no_matching_pairs:
+		mov dl, 'X'
+		mov BYTE[mCards + ebx], r8b			;mCards[i0][j0]     = mOpenCards[i0][j0];
+		mov BYTE[mOpenCards + ebx], dl		;mOpenCards[i0][j0] = 'X';
+		mov BYTE[mCards + ecx], r9b			;mCards[i1][j1]     = mOpenCards[i1][j1];
+		mov BYTE[mOpenCards + ecx], dl		;mOpenCards[i1][j1] = 'X';
+		mov rax, 4							;status = 4; //No hi ha parella
+		jmp end_if_match
+			
+   matching_pairs:
+		mov rax, 3
+		
+   end_if_match:
+      
+   pop r9
+   pop r8
+   pop rcx
+   pop rbx  
+   
    mov rsp, rbp
    pop rbp
    ret   
