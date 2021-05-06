@@ -584,32 +584,35 @@ moveCursorP2:
 openCardP2:  
    push rbp
    mov  rbp, rsp
-
+   
    push rbx
    push rcx
    push rdx
+   push r8
    
    mov rax, 0
    mov rbx, 0
    mov rcx, 0
-   mov rdx, 0
+   mov r8, 0
 										
-   mov eax, esi
-   shl eax, 2							;[vPos + state*4] 
-   mov ebx, edi  
-   ;mov [rdx + eax], ebx 				;vPos[state] = pos;
+   mov r8d, esi						;status
+   shl r8d, 2						;status*4
+   mov DWORD[rdx+r8], edi			;vPos[status] = pos;
    
-   ;mov dl, BYTE[rdx + ebx]			;mCards[i][j] in assembly is mCards[pos]							
+   mov dl, BYTE[mCards + edi]		;mCards[i][j] in assembly is mCards[pos]							
    
    cmp dl, 'x'								
    je end_if	
-	   mov [mOpenCards + ebx], dl 		;mOpenCards[i][j] = mCards[i][j];
+	   mov [mOpenCards + edi], dl 	;mOpenCards[i][j] = mCards[i][j];
 	   mov dl, 'x'  
-	   mov [mCards + ebx], dl			;mCards[i][j] = 'x'
-	   inc eax							;state++
+	   mov [mCards + edi], dl		;mCards[i][j] = 'x'
+	   inc esi						;status++
    
    end_if:
    
+   mov eax, esi
+   
+   pop r8
    pop rdx
    pop rcx
    pop rbx
@@ -645,8 +648,6 @@ openCardP2:
 checkPairsP2:
    push rbp
    mov  rbp, rsp
-
-   
    
    mov rsp, rbp
    pop rbp
